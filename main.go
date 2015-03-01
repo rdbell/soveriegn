@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/antonholmquist/jason"
-	"github.com/kr/pretty"
 )
 
 func main() {
@@ -47,7 +46,7 @@ func main() {
 		panic(err)
 	}
 
-	var results []*jason.Object
+	results := make(map[string]*jason.Object)
 
 	// Loop through the keychain to find a URL matching the user's query
 	for _, keychainItem := range keychain {
@@ -57,12 +56,30 @@ func main() {
 				url, err := urlEntry.GetString("url")
 				if err == nil {
 					if strings.Contains(url, query) {
-						results = append(results, keychainItem)
+						results[url] = keychainItem
 					}
 				}
 			}
 		}
 	}
 
-	pretty.Println(results)
+	// Print the results
+	for key, result := range results {
+		fmt.Println("URL: " + key)
+		fields, err := result.GetObjectArray("fields")
+		if err == nil {
+			for _, field := range fields {
+				designation, err := field.GetString("designation")
+				value, err2 := field.GetString("value")
+				if err == nil && err2 == nil {
+					if designation == "username" {
+						fmt.Println("Username: " + value)
+					} else if designation == "password" {
+						fmt.Println("Password: " + value)
+					}
+				}
+			}
+		}
+		fmt.Println()
+	}
 }
