@@ -21,8 +21,7 @@ main();
 function main() {
     current_profile = "default";
     keychainFolder = process.argv[2];
-    searchTerm = process.argv[3];
-    masterPassword = process.argv[4];
+    masterPassword = process.argv[3];
 
     keychain = new Keychain();
     loadFile(fullKeychainFilePath('encryptionKeys.js'), encryptionKeysDidFinishLoading);
@@ -99,25 +98,12 @@ function profileContentsDidFinishLoading(json) {
 	
 	keychain.setContents(allItems);
 
-        //findItemsByTitle(searchTerm);
-        findItemsByDomain(searchTerm);
+        fetchAllItems();
 }
 
-function findItemsByDomain(domain) {
+function fetchAllItems() {
     for (var index in keychain["_all"]) {
-        if (keychain["_all"][index]["domain"]) {
-            if (keychain["_all"][index]["domain"].toLowerCase().indexOf(domain.toLowerCase()) > -1) {
-                displayInfoForKeychainItem(index);
-            }
-        }
-    }
-}
-
-function findItemsByTitle(title) {
-    for (var index in keychain["_all"]) {
-        if (keychain["_all"][index]["title"].toLowerCase().indexOf(title.toLowerCase()) > -1) {
-            displayInfoForKeychainItem(index);
-        }
+        displayInfoForKeychainItem(index);
     }
 }
 
@@ -128,7 +114,7 @@ function displayInfoForKeychainItem(uuid) {
 
 function keychainItemDidFinishLoading(json) {
 	if (!json || json == "") {
-		console.log("The data file for this entry could not be loaded.")
+		//console.log("The data file for this entry could not be loaded.")
 		return;
 	}
 	
@@ -140,6 +126,8 @@ function keychainItemDidFinishLoading(json) {
 	
 	selectedItem = new KeychainItem(item);
         console.log(selectedItem.decrypt());
+        console.log(",");
+        //console.log("\n\n");
 }
 
 function Keychain() {
